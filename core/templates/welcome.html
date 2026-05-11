@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudySync</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- 🔷 NAVBAR -->
+<header class="navbar">
+    <div class="container nav-content">
+
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{% static 'images/logo1.png' %}" alt="logo">
+            
+        </div>
+
+        <!-- Menu -->
+         <div class="right-nav">
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+
+        </ul>
+
+       
+       
+    </div>
+
+    </div>
+</header>
+
+
+<!-- 🔷 HERO SECTION -->
+<section class="hero">
+    <div class="container hero-content">
+
+        <div class="left">
+            <h1>Manage Your Studies Smartly</h1>
+            <p>
+               StudySync is your personal academic companion designed to simplify and organize your student life. From managing your daily study tasks to tracking your long-term goals, StudySync helps you stay focused, consistent, and productive. Whether you are preparing for exams, placements, or improving your skills, everything you need is available in one place.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/register/" class="button primary">Register</a>
+                <a href="/login/" class="button secondary">Login</a>
+            </div>
+        </div>
+
+      
+
+    </div>
+</section>
+<section class="features" id="features">
+    <div class="container">
+
+        <h2 class="section-title">Features of StudySync</h2>
+       
+
+        <div class="feature-cards">
+
+            <div class="card">
+                <div class="icon">📊</div>
+                <h3>Track Progress</h3>
+                <p>Monitor your daily and weekly study performance easily.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">🎯</div>
+                <h3>Set Goals</h3>
+                <p>Define your academic goals and achieve them step by step.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">📝</div>
+                <h3>Manage Tasks</h3>
+                <p>Organize your assignments and study plans efficiently.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">📁</div>
+                <h3>Store Data</h3>
+                <p>Keep all your academic information in one place.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<section class="about" id="about">
+    <div class="container about-content">
+
+        <!-- Left Side (Text) -->
+        <div class="about-text">
+            <h2>About StudySync</h2>
+            <p>
+                StudySync is a smart and efficient platform designed to help students 
+                manage their academic journey in a structured way. It allows users to 
+                organize their study tasks, track progress, and stay focused on their goals.
+            </p>
+
+            <p>
+                With a simple and user-friendly interface, StudySync brings all your 
+                academic information in one place. Whether it’s managing tasks, setting 
+                goals, or preparing for placements, StudySync makes everything easier 
+                and more effective.
+            </p>
+            <div class="button-getstarted">
+                <a href="/register/" class="btn primary">Get Started</a>
+            </div>
+
+            
+        </div>
+
+       
+
+    </div>
+</section>
+
+</body>
+</html>

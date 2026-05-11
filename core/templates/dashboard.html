@@ -1,0 +1,741 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Dashboard - StudySync</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="container nav-content">
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <img src="{% static 'images/logo1.png' %}" alt="logo">
+
+            </div>
+
+            <!-- PROFILE -->
+
+            <div class="profile-wrapper">
+
+                <div class="profile-icon"
+                     onclick="toggleProfile()">
+
+                    {{ user.username|slice:":1"|upper }}
+
+                </div>
+
+                <!-- DROPDOWN -->
+
+                <div class="profile-dropdown"
+                     id="profileDropdown">
+
+                    <h3>
+                        Hi {{ user.username }} 👋
+                    </h3>
+
+                    <p>
+                        {{ user.email }}
+                    </p>
+
+                    <a href="/logout/">
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <div class="dashboard">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <div class="sidebar">
+
+            <ul>
+
+                <li onclick="showSection('dashboard')">
+                    Dashboard
+                </li>
+
+                <li onclick="showSection('taskpage')">
+                    Add Tasks
+                </li>
+
+                <li onclick="showSection('notespage')">
+                    Notes
+                </li>
+
+                <li onclick="showSection('subjectspage')">
+                    Subjects
+                </li>
+
+            </ul>
+
+        </div>
+
+        <!-- ================= MAIN ================= -->
+
+        <div class="main">
+
+            <!-- ================= DASHBOARD ================= -->
+
+            <div id="dashboard"
+                 class="section
+                 {% if active_section == 'dashboard' %}
+                 active
+                 {% endif %}">
+
+                <!-- STATS -->
+
+                <div class="cards">
+
+                    <div class="card">
+
+                        <h4>Total Tasks</h4>
+
+                        <h2>{{ total_tasks }}</h2>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h4>Completed</h4>
+
+                        <h2>{{ completed_tasks }}</h2>
+
+                    </div>
+
+                    <div class="card">
+
+                        <h4>Pending</h4>
+
+                        <h2>{{ pending_tasks }}</h2>
+
+                    </div>
+
+                </div>
+
+                <!-- RECENT NOTES -->
+
+                <div class="card recent-card">
+
+                    <h3>📝 Recent Notes</h3>
+
+                    <div id="recentNotesContainer">
+
+                        {% for note in notes|slice:":3" %}
+
+                        <p>
+
+                            <a href="{{ note.note_link }}"
+                               target="_blank">
+
+                                {{ note.title }}
+
+                            </a>
+
+                        </p>
+
+                        {% empty %}
+
+                        <p>No notes yet</p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- TRACKERS -->
+
+                <div class="top-trackers">
+
+                    <!-- STUDY TRACKER -->
+
+                    <div class="tracker-card">
+
+                        <h3>📚 Study Tracker</h3>
+
+                        <div class="study-time">
+
+                            <h1 id="hours">0</h1>
+
+                            <span>
+                                Hours Studied Today
+                            </span>
+
+                        </div>
+
+                        <div class="tracker-buttons">
+
+                            <button onclick="removeHour()">
+                                -
+                            </button>
+
+                            <button onclick="addHour()">
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOCUS TIMER -->
+
+                    <div class="focus-card">
+
+                        <h3>⏳ Focus Timer</h3>
+
+                        <input type="number"
+                               id="minutes"
+                               placeholder="Enter minutes">
+
+                        <div class="timer"
+                             id="timer">
+
+                            00:00
+
+                        </div>
+
+                        <div class="timer-buttons">
+
+                            <button onclick="startTimer()">
+                                Start
+                            </button>
+
+                            <button onclick="stopTimer()">
+                                Stop
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- MINI CALENDAR -->
+
+                    <div class="mini-calendar-card">
+
+                        <h3>📅 Study Calendar</h3>
+
+                        <input type="date"
+                               id="studyDate">
+
+                        <textarea id="studyNote"
+                                  placeholder="Write note...">
+                        </textarea>
+
+                        <button onclick="saveCalendarNote()">
+                            Save Note
+                        </button>
+
+                        <div class="calendar-notes"
+                             id="calendarNotes">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ================= TASK PAGE ================= -->
+
+            <div id="taskpage"
+                 class="section
+                 {% if active_section == 'taskpage' %}
+                 active
+                 {% endif %}">
+
+                <div class="task-page-card">
+
+                    <h2>📋 Task Manager</h2>
+
+                    <form method="POST">
+
+                        <input type="hidden"
+                               name="current_section"
+                               value="taskpage">
+
+                        {% csrf_token %}
+
+                        <div class="task-input-area">
+
+                            <input type="text"
+                                   name="task"
+                                   placeholder="Enter new task">
+
+                            <button type="submit"
+                                    name="add_task">
+
+                                Add Task
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    <div class="task-container">
+
+                        {% for task in tasks %}
+
+                        <div class="task-box">
+
+                            <p class="
+                                task-text
+                                {% if task.completed %}
+                                completed
+                                {% endif %}
+                            ">
+
+                                {{ task.title }}
+
+                            </p>
+
+                            <div class="task-buttons">
+
+                                {% if not task.completed %}
+
+                                <form method="POST">
+
+                                    <input type="hidden"
+                                           name="current_section"
+                                           value="taskpage">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="complete-task"
+                                            name="complete_task"
+                                            value="{{ task.id }}">
+
+                                        Complete
+
+                                    </button>
+
+                                </form>
+
+                                {% endif %}
+
+                                <form method="POST">
+
+                                    <input type="hidden"
+                                           name="current_section"
+                                           value="taskpage">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="delete-task"
+                                            name="delete_task"
+                                            value="{{ task.id }}">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <p>No tasks yet</p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ================= NOTES PAGE ================= -->
+
+            <div id="notespage"
+                 class="section
+                 {% if active_section == 'notespage' %}
+                 active
+                 {% endif %}">
+
+                <div class="task-page-card">
+
+                    <h2>📝 Notes Manager</h2>
+
+                    <form method="POST">
+
+                        <input type="hidden"
+                               name="current_section"
+                               value="notespage">
+
+                        {% csrf_token %}
+
+                        <div class="task-input-area">
+
+                            <input type="text"
+                                   name="title"
+                                   placeholder="Enter note title">
+
+                            <input type="text"
+                                   name="note_link"
+                                   placeholder="Paste PDF / Drive Link">
+
+                            <button type="submit"
+                                    name="save_note">
+
+                                Save Note
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    <div class="task-container">
+
+                        {% for note in notes %}
+
+                        <div class="task-box">
+
+                            <div>
+
+                                <h3>{{ note.title }}</h3>
+
+                                <a href="{{ note.note_link }}"
+                                   target="_blank">
+
+                                    Open Notes
+
+                                </a>
+
+                            </div>
+
+                            <div class="task-buttons">
+
+                                <form method="POST">
+
+                                    <input type="hidden"
+                                           name="current_section"
+                                           value="notespage">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="delete-task"
+                                            name="delete_note"
+                                            value="{{ note.id }}">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <p>No notes yet</p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ================= SUBJECTS PAGE ================= -->
+
+            <div id="subjectspage"
+                 class="section
+                 {% if active_section == 'subjectspage' %}
+                 active
+                 {% endif %}">
+
+                <div class="task-page-card">
+
+                    <h2>📚 Subjects Manager</h2>
+
+                    <form method="POST">
+
+                        <input type="hidden"
+                               name="current_section"
+                               value="subjectspage">
+
+                        {% csrf_token %}
+
+                        <div class="task-input-area">
+
+                            <input type="text"
+                                   name="subject"
+                                   placeholder="Enter subject name">
+
+                            <button type="submit"
+                                    name="add_subject">
+
+                                Add Subject
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    <div class="task-container">
+
+                        {% for subject in subjects %}
+
+                        <div class="task-box">
+
+                            <div>
+
+                                <h3>{{ subject.name }}</h3>
+
+                            </div>
+
+                            <div class="task-buttons">
+
+                                <form method="POST">
+
+                                    <input type="hidden"
+                                           name="current_section"
+                                           value="subjectspage">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="delete-task"
+                                            name="delete_subject"
+                                            value="{{ subject.id }}">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <p>No subjects yet</p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= SCRIPT ================= -->
+
+    <script>
+
+        /* PROFILE */
+
+        function toggleProfile() {
+
+            let box =
+                document.getElementById("profileDropdown");
+
+            if (box.style.display === "block") {
+
+                box.style.display = "none";
+
+            }
+
+            else {
+
+                box.style.display = "block";
+            }
+        }
+
+        /* OUTSIDE CLICK */
+
+        window.onclick = function (e) {
+
+            if (!e.target.closest(".profile-wrapper")) {
+
+                document
+                    .getElementById("profileDropdown")
+                    .style.display = "none";
+            }
+        };
+
+        /* SECTION SWITCH */
+
+        function showSection(id) {
+
+            document
+                .querySelectorAll(".section")
+                .forEach((s) => s.classList.remove("active"));
+
+            document
+                .getElementById(id)
+                .classList.add("active");
+        }
+
+        /* STUDY TRACKER */
+
+        let studyHours = 0;
+
+        function addHour() {
+
+            studyHours++;
+
+            updateHours();
+        }
+
+        function removeHour() {
+
+            if (studyHours > 0) {
+
+                studyHours--;
+            }
+
+            updateHours();
+        }
+
+        function updateHours() {
+
+            document
+                .getElementById("hours")
+                .innerText = studyHours;
+
+            localStorage.setItem(
+                "studyHours",
+                studyHours
+            );
+        }
+
+        window.onload = function () {
+
+            let saved =
+                localStorage.getItem("studyHours");
+
+            if (saved) {
+
+                studyHours = parseInt(saved);
+
+                updateHours();
+            }
+        };
+
+        /* FOCUS TIMER */
+
+        let countdown;
+
+        let totalSeconds = 0;
+
+        function startTimer() {
+
+            let mins =
+                document.getElementById("minutes").value;
+
+            if (!mins) return;
+
+            totalSeconds = mins * 60;
+
+            countdown = setInterval(() => {
+
+                let minutes =
+                    Math.floor(totalSeconds / 60);
+
+                let seconds =
+                    totalSeconds % 60;
+
+                document.getElementById("timer").innerText =
+
+                    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+                totalSeconds--;
+
+                if (totalSeconds < 0) {
+
+                    clearInterval(countdown);
+
+                    alert("🎉 Focus Session Completed!");
+                }
+
+            }, 1000);
+        }
+
+        function stopTimer() {
+
+            clearInterval(countdown);
+
+            document.getElementById("timer").innerText =
+                "00:00";
+        }
+
+        /* MINI CALENDAR */
+
+        function saveCalendarNote() {
+
+            let date =
+                document.getElementById("studyDate").value;
+
+            let note =
+                document.getElementById("studyNote").value;
+
+            if (date === "" || note === "") {
+                return;
+            }
+
+            let notesContainer =
+                document.getElementById("calendarNotes");
+
+            let div =
+                document.createElement("div");
+
+            div.classList.add("note-item");
+
+            div.innerHTML = `
+
+                <strong>${date}</strong>
+
+                <p>${note}</p>
+            `;
+
+            notesContainer.prepend(div);
+
+            document.getElementById("studyNote").value = "";
+        }
+
+    </script>
+
+</body>
+
+</html>
