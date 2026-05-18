@@ -110,6 +110,10 @@ def register(request):
 
         field = request.POST.get('field')
 
+        interests = request.POST.get('interests')
+
+        goal = request.POST.get('goal')
+
         # VALIDATIONS
 
         if not name:
@@ -119,6 +123,10 @@ def register(request):
         if not email:
 
             errors['email'] = "Email is required"
+
+        if not password:
+
+            errors['password'] = "Password is required"
 
         if password != confirm_password:
 
@@ -169,13 +177,21 @@ def register(request):
             password=password
         )
 
+        # SAVE USER
+
+        user.save()
+
         # CREATE PROFILE
 
         Profile.objects.create(
 
             user=user,
 
-            field=field
+            field=field,
+
+            interests=interests,
+
+            goal=goal
         )
 
         return redirect('/login/')
